@@ -1,0 +1,21 @@
+<div class="submission">
+
+  <div class="submission-heading">
+
+    <span class="submission-user">
+        Code from {{username}} 
+        <a href="/submission/{{submission.key().id()}}">Rate it!</a> 
+    </span>
+
+    <span class="submission-date">
+      {{ submission.last_modified.strftime("%b %d %Y") }}
+    </span>
+
+  </div>
+
+    <div class="submission-code">
+      {{ submission._render_text | safe}}
+  </div>
+   <div class="score">Total score: {{submission.score}}
+  </div>
+</div>

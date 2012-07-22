@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Udacity CS101 RPS contest !</title>
+    <link type="text/css" rel="stylesheet" href="/static/style.css" />
+    <link type="text/css" rel="stylesheet" href="/static/pygments.css" />
+  </head>
+  <body>
+    <div id="header">
+      <div class="header">Udacity CS101 RPS contest !</div>
+      <div class="login">
+          <span class="login">
+              <a href="/login">{{ login }}</a>
+              <a href="/signup">{{ signup }}</a>
+          </span>
+
+          <span class="welcome">{{ welcome }}</span>
+      </span>
+      <span class="entry_list"><a href="/">Entry list</a></span>
+
+      <span class="submit" class="logout">
+          <a href="/submit">Submit your entry!</a>
+      </span>
+      <span class="logout" class="logout">
+          <a href="/logout">{{ logout }}</a>
+      </span>
+  </div>
+  <br>
+  {% block content %}
+  {% endblock %}
+  </div>
+  </body>
+</html>

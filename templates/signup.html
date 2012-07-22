@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="warning">Signup for this site (use your Udacity username)</div> 
+<br> <form method="post">
+  <table>
+  <tr>
+      <td><label>Username</label></td>
+      <td><input type="text" name="username" value={{last_username}}>
+          {{error_username}}</td>
+  </tr>
+  <tr>
+      <td><label>Password</label></td>
+      <td><input type="password" name="password">{{error_password}}</td>   
+  </tr>
+  <tr>
+      <td><label>Verify</label></td>
+      <td><input type="password" name="verify"></td>
+  </tr>
+  </table>
+  <br>
+  <input type="submit">
+</form> 
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+   {{ submission.render() | safe }}
+   <div class="score-buttons">
+       <form method="post">
+         <input style="background-color:green" type="submit" name="upvote" value="+1">
+         <input style="background-color:red" type="submit" name="downvote" value="-1">
+       </form>
+       <div class="error">{{error}}<div>
+   </div>
+{% endblock %}

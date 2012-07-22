@@ -1,0 +1,83 @@
+body {
+    font-family:Verdana,Arial,sans-serif;
+    width : 800px;
+    margin : 0 auto;
+    padding : 0px;
+}
+input[type="submit"]{
+    background-color: #FA0;
+    color: white;
+    height: 40px;
+    font-size: 16px;
+}
+input[type="text"]{
+    width: 200px;
+}
+input[type="password"]{
+    width: 200px;
+}
+label{
+    color: #999;
+    font-size : 24px;
+}
+.warning{
+    font-size : 24px;
+    color: #F50;
+    }
+.error {
+    font-size : 24px;
+    color: #F20;
+    }
+.header{
+      display: block;
+      color: #FA0;
+      font-size:50px;
+    } 
+.login{
+      position: relative;
+      font-size:12px;
+    } 
+.entry_list{
+      display :inline;
+      position: absolute;
+      right : 0px;
+      font-size:16px;
+    } 
+.score-buttons{
+      position:relative;
+      font-size:20px;
+    } 
+.score {
+      position :relative;
+      color: #999;
+      font-size:32px;
+    } 
+.submission-heading {
+      position: relative;
+      width: 800px;
+      border-bottom :3px solid #666
+}
+.submission-user{
+      display :inline;
+      font-weight: bold;
+      font-size:24px;
+}
+.submission-date{
+      position: absolute;
+      right : 0px;
+      bottom: 0px;
+      display :inline;
+      color: #999;
+}
+.submission-code{
+      width: 800px;
+      font-family:Consolas,Monaco,"Courier New",Courier,monospace;
+      margin-top:5px;
+
+}
+.submission-input-code{
+      font-family:Consolas,Monaco,"Courier New",Courier,monospace;
+      margin-top:5px;
+      width : 600px;
+      height: 400px;
+}

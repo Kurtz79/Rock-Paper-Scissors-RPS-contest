@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="warning">Please login with the credentials for this site</div> 
+<br>
+<form method="post">
+  <table>
+  <tr>
+      <td><label>Username</label></td>
+      <td><input type="text" name="username" value={{last_username}}>
+          {{error}}</td>
+  </tr>
+  <tr>
+      <td><label>Password</label></td>
+      <td><input type="password" name="password"></td>   
+  </tr>
+  </table>
+  <br>
+  <input type="submit">
+</form> 
+{% endblock %}

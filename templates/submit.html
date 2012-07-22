@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+   <div class="warning">Submit your entry for the CS101 Rock-Paper-Scissor contest!</div>  
+   <br>
+   <form method="post">
+   <div>
+       <textarea class = "submission-input-code" name="code">{{last_submission}}</textarea> 
+   </div>
+     <input type="submit">
+   </form>
+   <br>
+   <div class="error">
+   {{error}}
+   <div>
+{% endblock %}

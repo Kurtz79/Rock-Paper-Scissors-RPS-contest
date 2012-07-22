@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+   {% for s in submissions %}
+   {{ s.render() | safe }}
+   <br><br>
+   {% endfor %}
+{% endblock %}
