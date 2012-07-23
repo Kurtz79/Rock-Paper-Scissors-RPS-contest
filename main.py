@@ -79,6 +79,14 @@ class Handler(webapp2.RequestHandler):
         if self.user : 
           params['welcome']='Welcome, %s' % self.user.username
           params['logout']='Logout'
+          if self.user.isadmin:
+              params['submit_option']=''
+              params['entry_list']='Entry List'
+          else :
+              if Submission.already_exists(self.user.key().id()):
+                params['review_old']='Review your entry!'
+              params['submit_new']='Submit a new entry!'
+              params['entry_list']=''
         else :
           params['login']='Login'
           params['signup']='Signup'
@@ -121,6 +129,7 @@ class User(db.Model):
     username = db.StringProperty(required = True)
     hashed_pwd = db.StringProperty(required = True)
     email = db.StringProperty(required = False)
+    isadmin = db.BooleanProperty(required = True)
 
 
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
@@ -206,10 +215,11 @@ class SignupHandler(Handler):
         else:
             new_user = User(username=entered_username,
                             hashed_pwd=make_hashed_password(entered_password), 
-                            email=entered_email)
+                            email=entered_email,
+                            isadmin=False)
             new_user.put()
             self.set_secure_cookie('user_id',str(new_user.key().id()))
-            self.redirect("/")
+            self.redirect("/submit")
 
 class WelcomeHandler(Handler):
     """Class used to display the welcome (successful signup) page"""
@@ -276,7 +286,18 @@ class LoginHandler(Handler):
                     entered_username)
         else:
             self.set_secure_cookie('user_id',str(user.key().id()))
-            self.redirect("/")
+
+            if (user.isadmin):
+                self.redirect('/entries')
+            else :
+                submission= db.GqlQuery(
+                    "select * from Submission where submitter_id = %d" % 
+                    int(user.key().id())).get()
+
+                if submission:
+                    self.redirect('/submission/%s' % int(submission.key().id()))
+                else :
+                    self.redirect("/submit")
 
 #login
 class LogoutHandler(Handler):
@@ -297,11 +318,18 @@ class EntryListHandler(Handler):
     def render_front(self, entries={}):
         """utility function used to render the front page"""
         submissions= db.GqlQuery("select * from Submission order by score desc")
-        self.render('index.html', submissions=submissions)
+        if submissions and submissions.get():
+            self.render('index.html', submissions=submissions)
+        else :
+            self.response.out.write("No submissions yet!")
 
     def get(self):
         """Function called when the front page is requested"""
-        self.render_front()
+
+        if not self.user or not self.user.isadmin:
+            self.redirect('/logout')
+        else :
+            self.render_front()
 
 class Submission(db.Model):
     """Model class defining code submission"""
@@ -316,8 +344,7 @@ class Submission(db.Model):
     @classmethod 
     def already_exists(cls, submitter_id):
         submissions= db.GqlQuery(
-                "select * from Submission where submitter_id = %d" % 
-                int(submitter_id))
+                "select * from Submission where submitter_id = %d" % int(submitter_id))
         if (submissions.get()):
             return submissions.get()
         else:
@@ -331,9 +358,9 @@ class Submission(db.Model):
                 HtmlFormatter())
         user_id = int(self.submitter_id)
         
-        user = User.get_by_id(user_id)
+        username = User.get_by_id(user_id).username
         return render_str("submission.html", 
-                submission=self,username=str(user.username))
+                submission=self,username=str(username))
 
 class SubmitEntryHandler(Handler):
     """Class used to handle a code submission from a user"""
@@ -349,6 +376,8 @@ class SubmitEntryHandler(Handler):
         """Function called when the new form page is requested"""
         if not self.user :
             self.redirect('/login')
+        elif self.user.isadmin:
+            self.redirect('/entries')
 
         self.render_front()
 
@@ -380,21 +409,59 @@ class SubmitEntryHandler(Handler):
             submission.put()
             self.redirect('/submission/%s' % submission.key().id())
 
+class MainHandler(Handler):
+
+    def get(self):
+
+        submission = None
+        if not self.user:
+            self.redirect("/login")
+        else:
+            submission= db.GqlQuery(
+                    "select * from Submission where submitter_id = %d" % 
+                    int(self.user.key().id())).get()
+
+        if submission:
+            self.render("permalink.html", submission=submission)
+        else :
+            self.redirect("/submit")
+
+class MyEntryHandler(Handler):
+    """Class used to display the page with a single code submission"""
+
+    def get(self):
+        """Function called when the entry page is requested"""
+        submission=None
+
+        if self.user:
+            submission = Submission.already_exists(self.user.key().id())
+            self.redirect('/submission/%s' % int(submission.key().id()))
+        else :
+            self.redirect('/submit')
+
 class EntryHandler(Handler):
     """Class used to display the page with a single code submission"""
 
     def get(self, entry_id):
         """Function called when the entry page is requested"""
-        submission = Submission.get_by_id(int(entry_id))
+        submission=None
 
-        if submission:
-            self.render("permalink.html", submission=submission)
+        if not entry_id and self.user:
+            submission = Submission.already_exists(self.user.key().id())
+
+        elif entry_id:
+            submission = Submission.get_by_id(int(entry_id))
+        
+        if submission and self.user :
+            if submission.submitter_id == self.user.key().id() or self.user.isadmin:
+              self.render("permalink.html", submission=submission)
+            else :
+              self.response.out.write("Access denied.")
         else :
-            self.error(404)
+            self.redirect("/login")
 
     def post(self,entry_id):
 
-        submission = Submission.get_by_id(int(entry_id))
 
         error=""
 
@@ -431,10 +498,12 @@ class EntryHandler(Handler):
 
 
 
-app = webapp2.WSGIApplication([('/', EntryListHandler),
+app = webapp2.WSGIApplication([('/', MainHandler),
     ('/submit', SubmitEntryHandler),
     ('/login', LoginHandler),
     ('/logout', LogoutHandler),
     ('/signup', SignupHandler),
-    ('/submission/([0-9]+)', EntryHandler)],
+    ('/entries', EntryListHandler),
+    ('/mysubmission', MyEntryHandler),
+    ('/submission/([0-9]*)', EntryHandler)],
     debug=True)

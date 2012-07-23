@@ -16,12 +16,15 @@
 
           <span class="welcome">{{ welcome }}</span>
       </span>
-      <span class="entry_list"><a href="/">Entry list</a></span>
+      <span class="entry_list"><a href="/">{{entry_list}}</a></span>
 
-      <span class="submit" class="logout">
-          <a href="/submit">Submit your entry!</a>
+      <span class="submit">
+          <a href="/mysubmission">{{review_old}}</a>
       </span>
-      <span class="logout" class="logout">
+      <span class="submit">
+          <a href="/submit">{{submit_new}}</a>
+      </span>
+      <span class="logout">
           <a href="/logout">{{ logout }}</a>
       </span>
   </div>
